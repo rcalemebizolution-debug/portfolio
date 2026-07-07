@@ -171,7 +171,7 @@ h3 { font-size: 1.28rem; margin-bottom: 12px; }
 .button:disabled { opacity: 0.65; cursor: not-allowed; transform: none; }
 .smallButton { margin-top: 18px; padding: 10px 16px; }
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
-.stats div, .serviceDetail, .featuredWork, .contactForm, .portraitFrame, .heroCard, .processCard, .metricCard, .resumeTimeline article, .testimonialCard {
+.stats div, .serviceDetail, .featuredWork, .contactForm, .portraitFrame, .heroCard, .processCard, .metricCard, .resumeTimeline article, .testimonialCard, .aiPreview, .aiPanel, .aiCapabilityGrid article {
   background: linear-gradient(145deg, var(--card-strong), var(--card));
   border: 1px solid var(--line);
   border-radius: 30px;
@@ -194,8 +194,8 @@ h3 { font-size: 1.28rem; margin-bottom: 12px; }
 
 .section { padding: 105px 0; position: relative; }
 .altSection { background: linear-gradient(180deg, transparent, rgba(255,255,255,0.035), transparent); }
-.aboutGrid, .contactGrid, .servicesGrid, .dashboardGrid, .resumeGrid, .testimonialGrid { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: 58px; align-items: center; }
-.servicesGrid, .contactGrid, .dashboardGrid, .resumeGrid, .testimonialGrid { grid-template-columns: 0.95fr 1.05fr; }
+.aboutGrid, .contactGrid, .servicesGrid, .dashboardGrid, .resumeGrid, .testimonialGrid, .aiGrid { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: 58px; align-items: center; }
+.servicesGrid, .contactGrid, .dashboardGrid, .resumeGrid, .testimonialGrid, .aiGrid { grid-template-columns: 0.95fr 1.05fr; }
 .portraitFrame { padding: 14px; overflow: hidden; }
 .portraitFrame img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 22px; filter: saturate(1.08) contrast(1.03); }
 .tabs, .serviceSelector, .filterBar { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 18px; }
@@ -221,7 +221,7 @@ h3 { font-size: 1.28rem; margin-bottom: 12px; }
 .serviceDetail { padding: 34px; min-height: 390px; position: relative; overflow: hidden; }
 .serviceDetail::before { content: ''; position: absolute; width: 220px; height: 220px; right: -70px; top: -70px; border-radius: 999px; background: rgba(255,0,85,0.18); filter: blur(10px); }
 .serviceIcon { display: inline-grid; place-items: center; width: 62px; height: 62px; border-radius: 20px; background: rgba(255,0,85,0.16); color: var(--accent-2); font-size: 2rem; margin-bottom: 26px; }
-.serviceDetail p, .processCard p, .featuredOverlay p, .contactForm label, .metricCard p, .resumeTimeline p, .testimonialCard p { color: var(--muted); line-height: 1.65; }
+.serviceDetail p, .processCard p, .featuredOverlay p, .contactForm label, .metricCard p, .resumeTimeline p, .testimonialCard p, .aiCapabilityGrid p, .aiPreviewMessages p { color: var(--muted); line-height: 1.65; }
 
 .stackSection { overflow: hidden; padding: 26px 0; border-block: 1px solid var(--line); background: rgba(255,255,255,0.025); }
 .stackTrack { display: flex; gap: 14px; width: max-content; animation: marquee 24s linear infinite; }
@@ -231,6 +231,48 @@ h3 { font-size: 1.28rem; margin-bottom: 12px; }
 .metricCard::after { content: ''; position: absolute; inset: auto 16px 16px 16px; height: 6px; border-radius: 999px; background: linear-gradient(90deg, var(--accent), var(--accent-3)); opacity: 0.75; }
 .metricCard span { color: var(--muted); font-weight: 900; }
 .metricCard strong { display: block; font-size: clamp(2.4rem, 6vw, 4.6rem); letter-spacing: -0.08em; margin: 10px 0; }
+
+.aiSection {
+  background: radial-gradient(circle at 78% 24%, rgba(139,245,255,0.14), transparent 30rem), radial-gradient(circle at 20% 80%, rgba(255,0,85,0.12), transparent 26rem);
+}
+.aiPromptChips, .aiSuggestions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 26px; }
+.aiPromptChips button, .aiSuggestions button {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255,255,255,0.06);
+  color: var(--text);
+  padding: 10px 14px;
+  font-weight: 900;
+  cursor: pointer;
+  transition: 0.22s ease;
+}
+.aiPromptChips button:hover, .aiSuggestions button:hover { background: rgba(139,245,255,0.14); border-color: rgba(139,245,255,0.38); transform: translateY(-2px); }
+.aiPreview { padding: 30px; position: relative; overflow: hidden; }
+.aiPreview::before { content: ''; position: absolute; width: 260px; height: 260px; right: -90px; top: -90px; border-radius: 999px; background: rgba(139,245,255,0.18); filter: blur(12px); }
+.aiOrb { width: 92px; height: 92px; display: grid; place-items: center; border-radius: 28px; background: linear-gradient(135deg, var(--accent), var(--accent-3)); color: #fff; font-size: 2rem; font-weight: 900; box-shadow: 0 18px 48px rgba(139,245,255,0.2); margin-bottom: 22px; position: relative; }
+.aiPreviewMessages { display: grid; gap: 12px; margin-bottom: 22px; position: relative; }
+.aiPreviewMessages p { margin: 0; padding: 16px; border: 1px solid var(--line); border-radius: 20px; background: rgba(255,255,255,0.055); }
+.aiPreviewMessages strong { color: var(--accent-2); }
+.aiCapabilityGrid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; position: relative; }
+.aiCapabilityGrid article { padding: 18px; border-radius: 22px; }
+.aiCapabilityGrid h3 { font-size: 1rem; margin-bottom: 8px; }
+.aiWidget { position: fixed; left: 18px; bottom: 18px; z-index: 70; display: grid; gap: 12px; justify-items: start; }
+.aiFab { width: 64px; height: 64px; border: 0; border-radius: 22px; cursor: pointer; color: #fff; font-weight: 900; background: linear-gradient(135deg, var(--accent), var(--accent-3)); box-shadow: 0 20px 60px rgba(255,0,85,0.28); }
+.aiPanel { width: min(390px, calc(100vw - 32px)); padding: 0; overflow: hidden; border-radius: 28px; backdrop-filter: blur(18px); }
+.aiPanelHeader { display: flex; align-items: center; justify-content: space-between; padding: 16px; border-bottom: 1px solid var(--line); }
+.aiPanelHeader div { display: flex; align-items: center; gap: 10px; }
+.aiPanelHeader span { display: grid; place-items: center; width: 38px; height: 38px; border-radius: 14px; background: linear-gradient(135deg, var(--accent), var(--accent-3)); color: #fff; font-weight: 900; }
+.aiPanelHeader button { width: 34px; height: 34px; border: 1px solid var(--line); border-radius: 999px; background: rgba(255,255,255,0.08); cursor: pointer; font-size: 1.2rem; }
+.aiMessages { max-height: 260px; overflow: auto; display: grid; gap: 10px; padding: 16px; }
+.aiMessages p { margin: 0; padding: 12px 14px; border-radius: 18px; line-height: 1.45; }
+.aiMessages .assistant { background: rgba(139,245,255,0.11); border: 1px solid rgba(139,245,255,0.18); }
+.aiMessages .user { background: rgba(255,0,85,0.16); border: 1px solid rgba(255,0,85,0.24); justify-self: end; max-width: 86%; }
+.aiSuggestions { padding: 0 16px 12px; margin-top: 0; }
+.aiSuggestions button { font-size: 0.78rem; padding: 8px 10px; }
+.aiInput { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 14px; border-top: 1px solid var(--line); }
+.aiInput input { min-width: 0; border: 1px solid var(--line); border-radius: 999px; background: rgba(0,0,0,0.22); color: var(--text); padding: 12px 14px; outline: none; }
+main[data-theme='light'] .aiInput input { background: rgba(255,255,255,0.72); }
+.aiInput button { border: 0; border-radius: 999px; background: var(--accent); color: #fff; padding: 0 16px; font-weight: 900; cursor: pointer; }
 .processSection { overflow: hidden; }
 .processRail { display: grid; grid-template-columns: repeat(4, 1fr); gap: 18px; margin-top: 38px; position: relative; }
 .processRail::before { content: ''; position: absolute; left: 8%; right: 8%; top: 32px; height: 2px; background: linear-gradient(90deg, var(--accent), var(--accent-3)); opacity: 0.45; }
@@ -294,10 +336,10 @@ footer p { margin: 0; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
 }
 @media (max-width: 980px) {
-  .heroGrid, .aboutGrid, .contactGrid, .servicesGrid, .workShowcase, .dashboardGrid, .resumeGrid, .testimonialGrid, .caseModal { grid-template-columns: 1fr; }
+  .heroGrid, .aboutGrid, .contactGrid, .servicesGrid, .workShowcase, .dashboardGrid, .resumeGrid, .testimonialGrid, .aiGrid, .caseModal { grid-template-columns: 1fr; }
   .heroGrid { padding-top: 28px; }
   .heroCard { min-height: 480px; }
-  .stats, .processRail, .metricGrid { grid-template-columns: repeat(2, 1fr); }
+  .stats, .processRail, .metricGrid, .aiCapabilityGrid { grid-template-columns: repeat(2, 1fr); }
   .processRail::before { display: none; }
   .workList { grid-template-columns: repeat(3, 1fr); }
   .caseModal img { min-height: 300px; }
@@ -312,9 +354,11 @@ footer p { margin: 0; }
   h1 { font-size: clamp(2.7rem, 13vw, 4.9rem); }
   .section { padding: 78px 0; }
   .hero { padding-bottom: 56px; }
-  .stats, .processRail, .workList, .metricGrid { grid-template-columns: 1fr; }
+  .stats, .processRail, .workList, .metricGrid, .aiCapabilityGrid { grid-template-columns: 1fr; }
   .featuredWork, .featuredWork img { min-height: 520px; }
   .featuredOverlay { inset: auto 14px 14px 14px; padding: 20px; }
   .floatingBadge { font-size: 0.82rem; }
   .themeToggle, .commandTrigger { right: 12px; font-size: 0.82rem; }
+  .aiWidget { left: 12px; bottom: 12px; }
+  .aiFab { width: 56px; height: 56px; border-radius: 18px; }
 }

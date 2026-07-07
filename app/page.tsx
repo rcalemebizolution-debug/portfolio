@@ -130,11 +130,25 @@ const commandItems = [
   ['Download CV', '/CV - (QA Automation) - Rhobert Isaac Calem.docx'],
 ];
 
+const aiQuickPrompts = [
+  'What QA services do you offer?',
+  'Summarize your automation experience',
+  'How can I contact you?',
+  'Which tools do you use?',
+];
+
+const aiCapabilities = [
+  ['Portfolio guide', 'Answers quick questions about skills, services, projects, resume, and contact details.'],
+  ['QA recommender', "Suggests whether manual, automation, or performance testing fits a visitor's project."],
+  ['Lead helper', 'Guides recruiters and clients to the best next action without leaving the page.'],
+];
+
 const tabs = { skills, experience, education };
 
 type TabKey = keyof typeof tabs;
 type WorkCategory = 'All' | 'Automation' | 'Manual' | 'Performance';
 type Theme = 'dark' | 'light';
+type AiMessage = { role: 'assistant' | 'user'; text: string };
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<TabKey>('skills');
@@ -150,6 +164,14 @@ export default function Home() {
   const [testimonialIndex, setTestimonialIndex] = useState(0);
   const [theme, setTheme] = useState<Theme>('dark');
   const [commandOpen, setCommandOpen] = useState(false);
+  const [aiOpen, setAiOpen] = useState(false);
+  const [aiInput, setAiInput] = useState('');
+  const [aiMessages, setAiMessages] = useState<AiMessage[]>([
+    {
+      role: 'assistant',
+      text: "Hi, I'm Rhobert's portfolio AI guide. Ask me about QA services, automation, performance testing, tools, resume, or contact details.",
+    },
+  ]);
 
   const categories = useMemo<WorkCategory[]>(() => ['All', 'Automation', 'Manual', 'Performance'], []);
   const filteredWorks = useMemo(
@@ -209,6 +231,7 @@ export default function Home() {
       if (event.key === 'Escape') {
         setCommandOpen(false);
         setModalWorkIndex(null);
+        setAiOpen(false);
       }
     }
 
@@ -231,6 +254,44 @@ export default function Home() {
       return;
     }
     window.location.href = target;
+  }
+
+  function getAiResponse(prompt: string) {
+    const question = prompt.toLowerCase();
+    if (question.includes('contact') || question.includes('email') || question.includes('hire')) {
+      return 'You can contact Rhobert through the contact form, email isaacsample@gmail.com, call 09156822453, or download the CV from this page.';
+    }
+    if (question.includes('service') || question.includes('offer')) {
+      return 'Rhobert offers manual testing, automation testing, and performance testing support, plus clear defect reporting and release-quality collaboration.';
+    }
+    if (question.includes('automation') || question.includes('script') || question.includes('selenium')) {
+      return 'Rhobert focuses on reusable automation scripts, smoke checks, and regression flows that reduce repetitive testing and improve release confidence.';
+    }
+    if (question.includes('performance') || question.includes('load') || question.includes('jmeter')) {
+      return 'For performance testing, Rhobert can help define load scenarios, check response trends, identify bottlenecks, and report optimization targets.';
+    }
+    if (question.includes('manual') || question.includes('bug') || question.includes('defect')) {
+      return 'Manual testing support includes requirement review, positive and negative scenarios, exploratory checks, and clear defect reports with evidence.';
+    }
+    if (question.includes('tool') || question.includes('stack')) {
+      return 'The portfolio highlights Selenium, Postman, JMeter, Jira, GitHub, JavaScript, React, Next.js, HTML, CSS, PHP, and regression testing.';
+    }
+    if (question.includes('resume') || question.includes('experience') || question.includes('cv')) {
+      return 'Rhobert has around 2 years of QA experience across automation, manual testing, and performance testing. You can download the full CV from the resume or contact section.';
+    }
+    return 'Rhobert is a QA professional with a developer mindset. He can support manual testing, automation testing, performance checks, defect reporting, and quality-focused collaboration.';
+  }
+
+  function sendAiMessage(prompt?: string) {
+    const text = (prompt ?? aiInput).trim();
+    if (!text) return;
+    setAiMessages((messages) => [
+      ...messages,
+      { role: 'user', text },
+      { role: 'assistant', text: getAiResponse(text) },
+    ]);
+    setAiInput('');
+    setAiOpen(true);
   }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
@@ -405,6 +466,36 @@ export default function Home() {
         </div>
       </section>
 
+      <section className="section aiSection scrollReveal" aria-labelledby="ai-title">
+        <div className="container aiGrid">
+          <div>
+            <p className="sectionKicker">AI Assistant</p>
+            <h2 id="ai-title">Ask the portfolio before you contact me.</h2>
+            <p className="sectionText">I added an AI-style portfolio guide that can answer common visitor questions about my QA services, tools, experience, resume, and contact options directly on the page.</p>
+            <div className="aiPromptChips">
+              {aiQuickPrompts.map((prompt) => (
+                <button key={prompt} type="button" onClick={() => sendAiMessage(prompt)}>{prompt}</button>
+              ))}
+            </div>
+          </div>
+          <div className="aiPreview tiltCard">
+            <div className="aiOrb">AI</div>
+            <div className="aiPreviewMessages">
+              <p><strong>Visitor:</strong> What testing service fits my app?</p>
+              <p><strong>AI Guide:</strong> Start with manual coverage, add automation for repeated flows, then performance checks for launch confidence.</p>
+            </div>
+            <div className="aiCapabilityGrid">
+              {aiCapabilities.map(([title, description]) => (
+                <article key={title}>
+                  <h3>{title}</h3>
+                  <p>{description}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="section processSection scrollReveal" aria-labelledby="process-title">
         <div className="container">
           <p className="sectionKicker">Process</p>
@@ -512,6 +603,36 @@ export default function Home() {
           </form>
         </div>
       </section>
+
+      <div className={aiOpen ? 'aiWidget open' : 'aiWidget'} aria-live="polite">
+        {aiOpen && (
+          <div className="aiPanel">
+            <div className="aiPanelHeader">
+              <div><span>AI</span><strong>Portfolio Guide</strong></div>
+              <button type="button" aria-label="Close AI guide" onClick={() => setAiOpen(false)}>×</button>
+            </div>
+            <div className="aiMessages">
+              {aiMessages.map((chat, index) => (
+                <p key={`${chat.role}-${index}`} className={chat.role}>
+                  {chat.text}
+                </p>
+              ))}
+            </div>
+            <div className="aiSuggestions">
+              {aiQuickPrompts.slice(0, 3).map((prompt) => (
+                <button key={prompt} type="button" onClick={() => sendAiMessage(prompt)}>{prompt}</button>
+              ))}
+            </div>
+            <form className="aiInput" onSubmit={(event) => { event.preventDefault(); sendAiMessage(); }}>
+              <input value={aiInput} onChange={(event) => setAiInput(event.target.value)} placeholder="Ask about QA, tools, resume..." />
+              <button type="submit">Send</button>
+            </form>
+          </div>
+        )}
+        <button className="aiFab" type="button" onClick={() => setAiOpen((open) => !open)} aria-label="Open AI portfolio guide">
+          AI
+        </button>
+      </div>
 
       {modalWork && (
         <div className="modalBackdrop" role="dialog" aria-modal="true" aria-labelledby="case-study-title" onClick={() => setModalWorkIndex(null)}>
