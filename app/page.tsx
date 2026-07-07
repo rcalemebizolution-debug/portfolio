@@ -378,7 +378,7 @@ export default function Home() {
           </div>
           <div className="heroVisual">
             <div className="heroCard tiltCard" aria-label="Profile image">
-              <img src="/assets/My project.png" alt="Rhobert Isaac Calem" />
+              <img src="/assets/professional-profile.jpg" alt="Rhobert Isaac Calem" />
               <div className="floatingBadge badgeTop">Automation</div>
               <div className="floatingBadge badgeBottom">Manual + Performance</div>
             </div>
@@ -389,7 +389,7 @@ export default function Home() {
       <section id="about" className="section aboutSection scrollReveal">
         <div className="container aboutGrid">
           <div className="portraitFrame tiltCard">
-            <img src="/assets/1.jpg" alt="Rhobert Isaac portrait" />
+            <img src="/assets/professional-about.jpg" alt="Rhobert Isaac portrait" />
           </div>
           <div>
             <p className="sectionKicker">About me</p>
