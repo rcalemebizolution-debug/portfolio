@@ -195,10 +195,13 @@ h3 { font-size: 1.28rem; margin-bottom: 12px; }
 .section { padding: 105px 0; position: relative; }
 .altSection { background: linear-gradient(180deg, transparent, rgba(255,255,255,0.035), transparent); }
 .aboutGrid, .contactGrid, .servicesGrid, .dashboardGrid, .resumeGrid, .testimonialGrid, .aiGrid { display: grid; grid-template-columns: 0.82fr 1.18fr; gap: 58px; align-items: center; }
+.aboutGrid { align-items: start; }
 .servicesGrid, .contactGrid, .dashboardGrid, .resumeGrid, .testimonialGrid, .aiGrid { grid-template-columns: 0.95fr 1.05fr; }
-.portraitFrame { padding: 14px; overflow: hidden; }
+.portraitFrame { padding: 14px; overflow: hidden; align-self: start; }
+.portraitFrame:hover { transform: none; }
 .portraitFrame img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 22px; filter: saturate(1.08) contrast(1.03); }
 .tabs, .serviceSelector, .filterBar { display: flex; flex-wrap: wrap; gap: 10px; margin: 28px 0 18px; }
+.tabPanel { min-height: 166px; }
 .tabs button, .servicePill, .filterBar button, .workList button {
   border: 1px solid var(--line);
   color: var(--muted);
