@@ -144,6 +144,11 @@ export default function Home() {
   const [spotlight, setSpotlight] = useState({ x: 50, y: 24 });
   const [modalWorkIndex, setModalWorkIndex] = useState<number | null>(null);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const auroraRef = useRef<HTMLDivElement | null>(null);
+  const starsRef = useRef<HTMLDivElement | null>(null);
+  const galaxyRef = useRef<HTMLDivElement | null>(null);
+  const earthGlowRef = useRef<HTMLDivElement | null>(null);
+  const earthOrbitRef = useRef<HTMLDivElement | null>(null);
   const earthRef = useRef<HTMLDivElement | null>(null);
   const cloudsRef = useRef<HTMLDivElement | null>(null);
   const rotationBadgeRef = useRef<HTMLDivElement | null>(null);
@@ -255,10 +260,28 @@ export default function Home() {
 
     const renderCosmos = (progress: number) => {
       const rotation = Math.round(progress * 720);
+      const drift = progress - 0.5;
+      const setTransform = (node: HTMLElement | null, value: string) => {
+        if (node) node.style.transform = value;
+      };
+      const setOpacity = (node: HTMLElement | null, value: number) => {
+        if (node) node.style.opacity = value.toFixed(3);
+      };
+
+      setTransform(auroraRef.current, `translate3d(0, ${progress * -34}px, 0) scale(${1 + progress * 0.035})`);
+      setTransform(starsRef.current, `translate3d(${progress * -120}px, ${progress * 70}px, 0)`);
+      setTransform(galaxyRef.current, `translate3d(${drift * 54}px, ${progress * -46}px, 0) rotate(${progress * 12}deg)`);
+      setOpacity(galaxyRef.current, 0.26 + progress * 0.16);
+
+      const earthMove = `translate3d(${drift * -52}px, ${progress * -88}px, 0) scale(${1 - progress * 0.06})`;
+      setTransform(earthGlowRef.current, earthMove);
+      setTransform(earthOrbitRef.current, `${earthMove} rotate(${progress * 18}deg)`);
       if (earthRef.current) {
+        earthRef.current.style.transform = earthMove;
         earthRef.current.style.backgroundPosition = `30% 22%, center, ${progress * 200}% 50%`;
       }
       if (cloudsRef.current) {
+        cloudsRef.current.style.transform = earthMove;
         cloudsRef.current.style.backgroundPosition = `30% 22%, center, ${progress * 280}% 50%`;
       }
       if (rotationBadgeRef.current) {
@@ -363,11 +386,12 @@ export default function Home() {
   return (
     <main>
       <div className="portfolioCosmos" aria-hidden="true">
-        <div className="portfolioAuroraPhoto" />
-        <div className="portfolioStars" />
-        <div className="portfolioGalaxy" />
-        <div className="portfolioEarthGlow" />
-        <div className="portfolioEarthOrbit" />
+        <div className="portfolioAuroraPhoto" ref={auroraRef} />
+        <div className="portfolioStars" ref={starsRef} />
+        <div className="portfolioGalaxy" ref={galaxyRef} />
+        <div className="portfolioScanlines" />
+        <div className="portfolioEarthGlow" ref={earthGlowRef} />
+        <div className="portfolioEarthOrbit" ref={earthOrbitRef} />
         <div className="portfolioEarth" ref={earthRef} />
         <div className="portfolioEarthClouds" ref={cloudsRef} />
         <div className="portfolioRotationBadge" ref={rotationBadgeRef}>0°</div>
