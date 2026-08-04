@@ -2,23 +2,26 @@
 
 import { useState } from 'react';
 
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+const withBasePath = (path: string) => `${basePath}${path}`;
+
 const navItems = [
-  ['Home', '/#home'],
-  ['About', '/#about'],
-  ['Services', '/#services'],
-  ['Work', '/#portfolio'],
-  ['Projects', '/projects'],
-  ['Contact', '/#contact'],
+  ['Home', withBasePath('/#home')],
+  ['About', withBasePath('/#about')],
+  ['Services', withBasePath('/#services')],
+  ['Work', withBasePath('/#portfolio')],
+  ['Projects', withBasePath('/projects')],
+  ['Contact', withBasePath('/#contact')],
 ];
 
 const projects = [
   {
     title: 'Casecraft Test Case Generator',
     description: 'A responsive React application that turns module, sub-module, issue details, preconditions, and test steps into structured QA test cases.',
-    image: '/assets/work1.webp',
+    image: withBasePath('/assets/casecraft-workspace.png'),
     tools: ['React', 'Vite', 'Groq', 'Vercel'],
     highlights: ['Structured QA test cases', 'AI-enhanced real-world scenarios', 'Rules-based fallback mode'],
-    url: 'https://testcase-generator-six.vercel.app',
+    url: 'https://testcase-generator-six.vercel.app/',
   },
 ];
 
@@ -29,8 +32,8 @@ export default function ProjectsPage() {
     <main>
       <section className="projectsHero">
         <header className="navWrap">
-          <a className="brand" href="/#home" aria-label="Rhobert Isaac Calem home">
-            <img src="/assets/logo.png" alt="Rhobert Isaac logo" />
+          <a className="brand" href={withBasePath('/#home')} aria-label="Rhobert Isaac Calem home">
+            <img src={withBasePath('/assets/logo.png')} alt="Rhobert Isaac logo" />
           </a>
           <button
             className="menuToggle"
@@ -43,7 +46,7 @@ export default function ProjectsPage() {
           </button>
           <nav className={menuOpen ? 'navLinks open' : 'navLinks'} aria-label="Primary navigation">
             {navItems.map(([label, href]) => (
-              <a key={href} className={href === '/projects' ? 'active' : ''} href={href} onClick={() => setMenuOpen(false)}>
+              <a key={href} className={href === withBasePath('/projects') ? 'active' : ''} href={href} onClick={() => setMenuOpen(false)}>
                 {label}
               </a>
             ))}
@@ -54,7 +57,7 @@ export default function ProjectsPage() {
           <p className="eyebrow">Selected projects</p>
           <h1>Projects I&apos;ve <span>built.</span></h1>
           <p className="heroLead">A growing collection of web apps, QA tools, and experiments I&apos;ve built while learning, solving problems, and exploring new ideas.</p>
-          <a className="button secondary" href="/#portfolio">Back to portfolio</a>
+          <a className="button secondary" href={withBasePath('/#portfolio')}>Back to portfolio</a>
         </div>
       </section>
 
@@ -62,7 +65,9 @@ export default function ProjectsPage() {
         <div className="container projectsGrid">
           {projects.map((project) => (
             <article className="projectCard tiltCard" key={project.title}>
-              <img src={project.image} alt={`${project.title} preview`} />
+              <div className="projectImageFrame">
+                <img src={project.image} alt={`${project.title} preview`} />
+              </div>
               <div className="projectContent">
                 <p className="sectionKicker">Featured project</p>
                 <h2>{project.title}</h2>

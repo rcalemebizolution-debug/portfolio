@@ -1,13 +1,17 @@
 'use client';
 
 import { FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
+import type { CSSProperties } from 'react';
+
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH ?? '';
+const withBasePath = (path: string) => `${basePath}${path}`;
 
 const navItems = [
   ['Home', '#home'],
   ['About', '#about'],
   ['Services', '#services'],
   ['Work', '#portfolio'],
-  ['Projects', '/projects'],
+  ['Projects', withBasePath('/projects')],
   ['Contact', '#contact'],
 ];
 
@@ -65,7 +69,7 @@ const services = [
 
 const works = [
   {
-    image: '/assets/work1.webp',
+    image: withBasePath('/assets/work1.webp'),
     title: 'Automation Testing',
     category: 'Automation',
     description: 'Turning complex quality checks into repeatable flows for faster confidence.',
@@ -76,7 +80,7 @@ const works = [
     result: 'Shorter feedback loops, stronger release confidence, and cleaner regression coverage.',
   },
   {
-    image: '/assets/work 2.jpg',
+    image: withBasePath('/assets/work 2.jpg'),
     title: 'Manual Testing',
     category: 'Manual',
     description: 'Finding usability issues, functional defects, edge cases, and regression risks before release.',
@@ -87,7 +91,7 @@ const works = [
     result: 'Better issue visibility, clearer acceptance coverage, and fewer missed edge cases.',
   },
   {
-    image: '/assets/work 3.jpg',
+    image: withBasePath('/assets/work 3.jpg'),
     title: 'Performance Testing',
     category: 'Performance',
     description: 'Evaluating application behavior under load, stress, and real-world usage patterns.',
@@ -383,9 +387,15 @@ export default function Home() {
     window.setTimeout(() => setMessage(''), 5000);
   }
 
+  const cosmosImageStyle = {
+    '--aurora-image': `url("${withBasePath('/assets/aurora-photo.jpg')}")`,
+    '--earth-image': `url("${withBasePath('/assets/earth-sphere-texture.jpg')}")`,
+    '--earth-clouds-image': `url("${withBasePath('/assets/earth-clouds.png')}")`,
+  } as CSSProperties;
+
   return (
     <main>
-      <div className="portfolioCosmos" aria-hidden="true">
+      <div className="portfolioCosmos" aria-hidden="true" style={cosmosImageStyle}>
         <div className="portfolioAuroraPhoto" ref={auroraRef} />
         <div className="portfolioStars" ref={starsRef} />
         <div className="portfolioGalaxy" ref={galaxyRef} />
@@ -409,7 +419,7 @@ export default function Home() {
         <div className="heroParallaxGlow glowTwo parallaxLayer" data-parallax aria-hidden="true" />
         <header className="navWrap">
           <a className="brand" href="#home" aria-label="Rhobert Isaac Calem home">
-            <img src="/assets/logo.png" alt="Rhobert Isaac logo" />
+            <img src={withBasePath('/assets/logo.png')} alt="Rhobert Isaac logo" />
           </a>
           <button
             className="menuToggle"
@@ -453,7 +463,7 @@ export default function Home() {
           </div>
           <div className="heroVisual parallaxLayer" data-parallax>
             <div className="heroCard tiltCard" aria-label="Profile image">
-              <img src="/assets/professional-profile.jpg" alt="Rhobert Isaac Calem" />
+              <img src={withBasePath('/assets/professional-profile.jpg')} alt="Rhobert Isaac Calem" />
               <div className="floatingBadge badgeTop">Automation</div>
               <div className="floatingBadge badgeBottom">Manual + Performance</div>
             </div>
@@ -465,7 +475,7 @@ export default function Home() {
         <div className="container aboutGrid">
           <div className="parallaxLayer" data-parallax>
             <div className="portraitFrame tiltCard">
-              <img src="/assets/professional-about.jpg" alt="Rhobert Isaac portrait" />
+              <img src={withBasePath('/assets/professional-about.jpg')} alt="Rhobert Isaac portrait" />
             </div>
           </div>
           <div>
