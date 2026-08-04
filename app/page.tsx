@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, MouseEvent, useEffect, useMemo, useState } from 'react';
+import { FormEvent, MouseEvent, useEffect, useMemo, useRef, useState } from 'react';
 
 const navItems = [
   ['Home', '#home'],
@@ -144,6 +144,9 @@ export default function Home() {
   const [spotlight, setSpotlight] = useState({ x: 50, y: 24 });
   const [modalWorkIndex, setModalWorkIndex] = useState<number | null>(null);
   const [testimonialIndex, setTestimonialIndex] = useState(0);
+  const earthRef = useRef<HTMLDivElement | null>(null);
+  const cloudsRef = useRef<HTMLDivElement | null>(null);
+  const rotationBadgeRef = useRef<HTMLDivElement | null>(null);
 
   const categories = useMemo<WorkCategory[]>(() => ['All', 'Automation', 'Manual', 'Performance'], []);
   const filteredWorks = useMemo(
@@ -195,6 +198,129 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    const layers = Array.from(document.querySelectorAll<HTMLElement>('[data-parallax]'));
+    const progressIndicator = document.querySelector<HTMLElement>('.scrollProgressIndicator');
+
+    const updateParallax = () => {
+      frame = 0;
+      const viewportCenter = window.innerHeight / 2;
+      const scrollRange = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      progressIndicator?.style.setProperty('--scroll-progress', Math.min(1, window.scrollY / scrollRange).toString());
+
+      layers.forEach((layer) => {
+        if (reducedMotion.matches) {
+          layer.style.setProperty('--parallax-y', '0px');
+          layer.style.setProperty('--parallax-scale', '1');
+          return;
+        }
+
+        const rect = layer.getBoundingClientRect();
+        const offset = Math.max(-1, Math.min(1, (viewportCenter - (rect.top + rect.height / 2)) / window.innerHeight));
+        const compact = window.innerWidth <= 720;
+        const scale = compact ? 1.01 + ((offset + 1) / 2) * 0.035 : 1.02 + ((offset + 1) / 2) * 0.12;
+        layer.style.setProperty('--parallax-y', `${Math.round(offset * (compact ? -42 : -110))}px`);
+        layer.style.setProperty('--parallax-scale', scale.toFixed(3));
+      });
+    };
+
+    const requestUpdate = () => {
+      if (!frame) frame = window.requestAnimationFrame(updateParallax);
+    };
+
+    updateParallax();
+    window.addEventListener('scroll', requestUpdate, { passive: true });
+    window.addEventListener('resize', requestUpdate);
+    reducedMotion.addEventListener('change', requestUpdate);
+
+    return () => {
+      window.removeEventListener('scroll', requestUpdate);
+      window.removeEventListener('resize', requestUpdate);
+      reducedMotion.removeEventListener('change', requestUpdate);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    let frame = 0;
+    let currentProgress = -1;
+    let targetProgress = 0;
+
+    const readProgress = () => {
+      const range = Math.max(1, document.documentElement.scrollHeight - window.innerHeight);
+      targetProgress = Math.min(1, Math.max(0, window.scrollY / range));
+    };
+
+    const renderCosmos = (progress: number) => {
+      const rotation = Math.round(progress * 720);
+      if (earthRef.current) {
+        earthRef.current.style.backgroundPosition = `30% 22%, center, ${progress * 200}% 50%`;
+      }
+      if (cloudsRef.current) {
+        cloudsRef.current.style.backgroundPosition = `30% 22%, center, ${progress * 280}% 50%`;
+      }
+      if (rotationBadgeRef.current) {
+        rotationBadgeRef.current.textContent = `${rotation}°`;
+      }
+    };
+
+    const animate = () => {
+      if (reducedMotion.matches) {
+        currentProgress = targetProgress;
+      } else if (currentProgress < 0) {
+        currentProgress = targetProgress;
+      } else {
+        const delta = targetProgress - currentProgress;
+        currentProgress += delta * 0.38;
+        if (Math.abs(delta) < 0.0006) currentProgress = targetProgress;
+      }
+
+      renderCosmos(currentProgress);
+      if (Math.abs(targetProgress - currentProgress) > 0.0006) {
+        frame = window.requestAnimationFrame(animate);
+      } else {
+        frame = 0;
+      }
+    };
+
+    const requestSpin = () => {
+      readProgress();
+      if (!frame) frame = window.requestAnimationFrame(animate);
+    };
+
+    requestSpin();
+    window.addEventListener('scroll', requestSpin, { passive: true });
+    window.addEventListener('resize', requestSpin);
+    reducedMotion.addEventListener('change', requestSpin);
+
+    return () => {
+      window.removeEventListener('scroll', requestSpin);
+      window.removeEventListener('resize', requestSpin);
+      reducedMotion.removeEventListener('change', requestSpin);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
+  useEffect(() => {
+    const timelineObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('timelineVisible');
+            timelineObserver.unobserve(entry.target);
+          }
+        });
+      },
+      { threshold: 0.2 },
+    );
+
+    document.querySelectorAll('[data-timeline-card]').forEach((element) => timelineObserver.observe(element));
+    return () => timelineObserver.disconnect();
+  }, []);
+
+  useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
       if (event.key === 'Escape') {
         setModalWorkIndex(null);
@@ -236,6 +362,17 @@ export default function Home() {
 
   return (
     <main>
+      <div className="portfolioCosmos" aria-hidden="true">
+        <div className="portfolioAuroraPhoto" />
+        <div className="portfolioStars" />
+        <div className="portfolioGalaxy" />
+        <div className="portfolioEarthGlow" />
+        <div className="portfolioEarthOrbit" />
+        <div className="portfolioEarth" ref={earthRef} />
+        <div className="portfolioEarthClouds" ref={cloudsRef} />
+        <div className="portfolioRotationBadge" ref={rotationBadgeRef}>0°</div>
+      </div>
+      <div className="scrollProgressIndicator" aria-hidden="true" />
       <section
         id="home"
         className="hero"
@@ -244,6 +381,8 @@ export default function Home() {
       >
         <div className="orbit orbitOne" />
         <div className="orbit orbitTwo" />
+        <div className="heroParallaxGlow glowOne parallaxLayer" data-parallax aria-hidden="true" />
+        <div className="heroParallaxGlow glowTwo parallaxLayer" data-parallax aria-hidden="true" />
         <header className="navWrap">
           <a className="brand" href="#home" aria-label="Rhobert Isaac Calem home">
             <img src="/assets/logo.png" alt="Rhobert Isaac logo" />
@@ -267,7 +406,7 @@ export default function Home() {
         </header>
 
         <div className="container heroGrid">
-          <div className="heroCopy revealCard">
+          <div className="heroCopy revealCard parallaxLayer" data-parallax>
             <p className="eyebrow">Quality Assurance Analyst • Automation Specialist</p>
             <h1>
               Interactive QA portfolio for <span>software confidence.</span>
@@ -288,7 +427,7 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <div className="heroVisual">
+          <div className="heroVisual parallaxLayer" data-parallax>
             <div className="heroCard tiltCard" aria-label="Profile image">
               <img src="/assets/professional-profile.jpg" alt="Rhobert Isaac Calem" />
               <div className="floatingBadge badgeTop">Automation</div>
@@ -300,8 +439,10 @@ export default function Home() {
 
       <section id="about" className="section aboutSection scrollReveal">
         <div className="container aboutGrid">
-          <div className="portraitFrame tiltCard">
-            <img src="/assets/professional-about.jpg" alt="Rhobert Isaac portrait" />
+          <div className="parallaxLayer" data-parallax>
+            <div className="portraitFrame tiltCard">
+              <img src="/assets/professional-about.jpg" alt="Rhobert Isaac portrait" />
+            </div>
           </div>
           <div>
             <p className="sectionKicker">About me</p>
@@ -344,12 +485,14 @@ export default function Home() {
               ))}
             </div>
           </div>
-          <article className="serviceDetail tiltCard">
-            <span className="serviceIcon">{services[activeService].icon}</span>
-            <h3>{services[activeService].title}</h3>
-            <p>{services[activeService].description}</p>
-            <ul>{services[activeService].details.map((detail) => <li key={detail}>{detail}</li>)}</ul>
-          </article>
+          <div className="parallaxLayer" data-parallax>
+            <article className="serviceDetail tiltCard">
+              <span className="serviceIcon">{services[activeService].icon}</span>
+              <h3>{services[activeService].title}</h3>
+              <p>{services[activeService].description}</p>
+              <ul>{services[activeService].details.map((detail) => <li key={detail}>{detail}</li>)}</ul>
+            </article>
+          </div>
         </div>
       </section>
 
@@ -410,18 +553,20 @@ export default function Home() {
                 </button>
               ))}
             </div>
-            <article className="featuredWork tiltCard">
-              <img src={activeWork.image} alt={`${activeWork.title} project preview`} />
-              <div className="featuredOverlay">
-                <p>{activeWork.category}</p>
-                <h3>{activeWork.title}</h3>
-                <p>{activeWork.description}</p>
-                <div>{activeWork.metrics.map((metric) => <span key={metric}>{metric}</span>)}</div>
-                <button className="button secondary smallButton" type="button" onClick={() => setModalWorkIndex(works.findIndex((work) => work.title === activeWork.title))}>
-                  Open case study
-                </button>
-              </div>
-            </article>
+            <div className="parallaxLayer" data-parallax>
+              <article className="featuredWork tiltCard">
+                <img src={activeWork.image} alt={`${activeWork.title} project preview`} />
+                <div className="featuredOverlay">
+                  <p>{activeWork.category}</p>
+                  <h3>{activeWork.title}</h3>
+                  <p>{activeWork.description}</p>
+                  <div>{activeWork.metrics.map((metric) => <span key={metric}>{metric}</span>)}</div>
+                  <button className="button secondary smallButton" type="button" onClick={() => setModalWorkIndex(works.findIndex((work) => work.title === activeWork.title))}>
+                    Open case study
+                  </button>
+                </div>
+              </article>
+            </div>
           </div>
         </div>
       </section>
@@ -435,7 +580,11 @@ export default function Home() {
             <a className="button primary" href="/CV - (QA Automation) - Rhobert Isaac Calem.docx" download>Download full CV</a>
           </div>
           <div className="resumeTimeline">
-            {resumeTimeline.map(([year, title, note]) => <article key={`${year}-${title}`}><span>{year}</span><h3>{title}</h3><p>{note}</p></article>)}
+            {resumeTimeline.map(([year, title, note]) => (
+              <div className="timelineParallax parallaxLayer" data-parallax key={`${year}-${title}`}>
+                <article data-timeline-card><span>{year}</span><h3>{title}</h3><p>{note}</p></article>
+              </div>
+            ))}
           </div>
         </div>
       </section>
